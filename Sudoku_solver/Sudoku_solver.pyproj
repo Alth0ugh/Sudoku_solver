@@ -21,19 +21,19 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DancingLinks\Cell.py">
+    <Compile Include="DLX\Cell.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DancingLinks\DancingLinks.py">
+    <Compile Include="DLX\DancingLinks.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DancingLinks\Header.py">
+    <Compile Include="DLX\Header.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Sudoku_solver.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DancingLinks\" />
+    <Folder Include="DLX\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
