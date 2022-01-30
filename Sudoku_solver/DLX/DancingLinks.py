@@ -3,8 +3,10 @@ from DLX.Header import *
 
 class DancingLinks():
     def __init__(self):
-        self.__found_solutions = []
+        self.__found_solutions = [None] * (81*81)
+        self.__solution_count = 0
         self.__header = Header()
+        self.__counter = 0
 
     def __construct_links(self, sudoku_matrix):
         header_iterator = self.__header
@@ -12,6 +14,19 @@ class DancingLinks():
         first_row = None
         first_column = None
         first_block = None
+        first_square = None
+
+        for i in range(9):
+            for j in range(9):
+                new_square = Header()
+                new_square.name = str(i + 1) + str(j + 1)
+                header_iterator.right = new_square
+                new_square.left = header_iterator
+                new_square.up = new_square
+                new_square.down = new_square
+                header_iterator = new_square
+                if (i == 0 and j == 0):
+                    first_square = new_square
         
         for i in range(9):
             for j in range(9):
@@ -54,82 +69,29 @@ class DancingLinks():
 
         row_iterator = first_row
         column_iterator = first_column
+        square_iterator = first_square
         previous_column_iterator = column_iterator
         block_iterator = first_block
         previous_block_iterator = block_iterator
-        #i = 0
-        #j = 0
-        #while (i < 81):
-        #    new_row_cell = Cell()
-        #    new_column_cell = Cell()
-        #    new_block_cell = Cell()
-
-        #    new_row_cell.right = new_column_cell
-        #    new_row_cell.left = new_block_cell
-            
-        #    new_column_cell.left = new_row_cell
-        #    new_column_cell.right = new_block_cell
-
-        #    new_block_cell.right = new_row_cell
-        #    new_block_cell.left = new_column_cell
-
-        #    #Insert row cell
-        #    new_row_cell.down = row_iterator.down
-        #    row_iterator.down.up = new_row_cell
-        #    row_iterator.down = new_row_cell
-
-        #    new_row_cell.up = row_iterator
-        #    new_row_cell.column = row_iterator
-
-        #    #Insert column cell
-        #    new_column_cell.down = column_iterator.down
-        #    column_iterator.down.up  = new_column_cell
-        #    column_iterator.down = new_column_cell
-
-        #    new_column_cell.up = column_iterator
-        #    new_column_cell.column = column_iterator
-
-        #    #Insert block cell
-        #    new_block_cell.down = block_iterator
-        #    block_iterator.down.up = new_block_cell
-        #    block_iterator.down = new_block_cell
-
-        #    new_block_cell.up = block_iterator
-        #    new_block_cell.column = block_iterator
-
-        #    column_iterator = column_iterator.right
-            
-        #    if ((j + 1) % 81 == 0):
-        #        previous_column_iterator = column_iterator
-        #    elif ((j + 1) % 9 == 0):
-        #        column_iterator = previous_column_iterator
-
-        #    if ((j + 1) % 27 == 0):
-        #        block_iterator = block_iterator.right
-        #        previous_block_iterator = block_iterator
-        #    elif ((j + 1) % 9 == 0):
-        #        block_iterator = previous_block_iterator
-        #    elif ((j + 1) % 3 == 0):
-        #        block_iterator = block_iterator.right
-
-        #    row_iterator = row_iterator.right
-        #    i += 1
-        #    j += 1
 
         for i in range(81):
             for j in range(9):
                 new_row_cell = Cell()
                 new_column_cell = Cell()
                 new_block_cell = Cell()
+                new_square_cell = Cell()
 
-                new_row_cell.right = new_column_cell
-                new_row_cell.left = new_block_cell
+                new_square_cell.left = new_block_cell
+                new_square_cell.right = new_row_cell
                 
+                new_row_cell.left = new_square_cell
+                new_row_cell.right = new_column_cell
+
                 new_column_cell.left = new_row_cell
                 new_column_cell.right = new_block_cell
 
-                new_block_cell.right = new_row_cell
                 new_block_cell.left = new_column_cell
+                new_block_cell.right = new_square_cell
 
                 #Insert row cell
                 new_row_cell.down = row_iterator.down
@@ -148,12 +110,22 @@ class DancingLinks():
                 new_column_cell.column = column_iterator
 
                 #Insert block cell
-                new_block_cell.down = block_iterator
+                new_block_cell.down = block_iterator.down
                 block_iterator.down.up = new_block_cell
                 block_iterator.down = new_block_cell
 
                 new_block_cell.up = block_iterator
                 new_block_cell.column = block_iterator
+
+                #Insert square cell
+                new_square_cell.down = square_iterator.down
+                square_iterator.down.up = new_square_cell
+                square_iterator.down = new_square_cell
+
+                new_square_cell.up = square_iterator
+                new_square_cell.column = square_iterator
+                
+                square_iterator = square_iterator.right
 
                 column_iterator = column_iterator.right
 
@@ -167,10 +139,32 @@ class DancingLinks():
                     
             if ((i + 1) % 9 == 0):
                 previous_column_iterator = column_iterator
+                square_iterator = first_square
             else:
                 column_iterator = previous_column_iterator
 
             row_iterator = row_iterator.right
+
+        for i in range(9):
+            for j in range(9):
+                sqaure_iterator = first_square
+                if (sudoku_matrix[i][j] != -1):
+                    number = sudoku_matrix[i][j]
+                    while(square_iterator.name != str(i + 1) + str(j + 1)):
+                        square_iterator = square_iterator.right
+                    cell_iterator = square_iterator.down
+                    self.__cover(square_iterator)
+                    while(square_iterator != cell_iterator):
+                        if (cell_iterator.left.column.name[0:1] == str(number)):
+                            self.__found_solutions[self.__solution_count] = cell_iterator
+                            self.__solution_count += 1
+                            row_iterator = cell_iterator.right
+                            while(row_iterator != cell_iterator):
+                                self.__cover(row_iterator.column)
+                                row_iterator = row_iterator.right
+                        cell_iterator = cell_iterator.down
+
+        self.__search(self.__solution_count + 1)
 
     def __cover(self, column):
         left_column = column.left
@@ -210,7 +204,7 @@ class DancingLinks():
                 down_element = column_iterator.down
 
                 up_element.down = column_iterator
-                down_element = column_iterator
+                down_element.up = column_iterator
 
                 left_column = column_iterator.column.left
                 right_column = column_iterator.column.right
@@ -218,11 +212,18 @@ class DancingLinks():
                 column_iterator = column_iterator.left
             row_iterator = row_iterator.up
 
-    def __search(self, k = 0):
-        if (header.right == header):
-            print_answer()
+    def __print_answer(self):
+        solution = [[-1 for i in range(9)] for j in range(9)]
+        for i in range(81*81):
+            if (self.__found_solutions[i] != None):
+                solution[int(self.__found_solutions[i].column.name[0:1]) - 1][int(self.__found_solutions[i].column.name[1:2]) - 1] = self.__found_solutions[i].right.column.name[0:1]
+        print(*solution, sep = "\n")
+
+    def __search(self, k):
+        if (self.__header.right == self.__header):
+            self.__print_answer()
             return
-        column = header.right
+        column = self.__header.right
         self.__cover(column)
         row_iterator = column.down
         while(row_iterator != column):
@@ -239,8 +240,10 @@ class DancingLinks():
                 column_iterator = column_iterator.left
             row_iterator = row_iterator.down
         self.__uncover(column)
+        self.__counter += 1
 
-    def Solve(self):
+    def Solve(self, sudoku_matrix):
         #self.__search()
         #return self.__found_solutions
-        self.__construct_links(None)
+        self.__construct_links(sudoku_matrix)
+        #print(str(self.__counter))
