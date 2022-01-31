@@ -3,7 +3,7 @@ from DLX.Header import *
 
 class DancingLinks():
     def __init__(self):
-        self.__found_solutions = [None] * (81*81)
+        self.__found_solutions = [None] * 81
         self.__solution_count = 0
         self.__header = Header()
         self.__counter = 0
@@ -20,6 +20,7 @@ class DancingLinks():
             for j in range(9):
                 new_square = Header()
                 new_square.name = str(i + 1) + str(j + 1)
+                new_square.size = 0
                 header_iterator.right = new_square
                 new_square.left = header_iterator
                 new_square.up = new_square
@@ -32,6 +33,7 @@ class DancingLinks():
             for j in range(9):
                 new_column = Header()
                 new_column.name = str(i + 1) + "r" + str(j + 1)
+                new_column.size = 0
                 header_iterator.right = new_column
                 new_column.left = header_iterator
                 new_column.up = new_column
@@ -44,6 +46,7 @@ class DancingLinks():
             for j in range(9):
                 new_column = Header()
                 new_column.name = str(i + 1) + "c" + str(j + 1)
+                new_column.size = 0
                 header_iterator.right = new_column
                 new_column.left = header_iterator
                 new_column.up = new_column
@@ -56,6 +59,7 @@ class DancingLinks():
             for j in range(9):
                 new_column = Header()
                 new_column.name = str(i + 1) + "b" + str(j + 1)
+                new_column.size = 0
                 header_iterator.right = new_column
                 new_column.left = header_iterator
                 new_column.up = new_column
@@ -100,6 +104,7 @@ class DancingLinks():
 
                 new_row_cell.up = row_iterator
                 new_row_cell.column = row_iterator
+                row_iterator.size += 1
 
                 #Insert column cell
                 new_column_cell.down = column_iterator.down
@@ -108,6 +113,7 @@ class DancingLinks():
 
                 new_column_cell.up = column_iterator
                 new_column_cell.column = column_iterator
+                column_iterator.size += 1
 
                 #Insert block cell
                 new_block_cell.down = block_iterator.down
@@ -116,6 +122,7 @@ class DancingLinks():
 
                 new_block_cell.up = block_iterator
                 new_block_cell.column = block_iterator
+                block_iterator.size += 1
 
                 #Insert square cell
                 new_square_cell.down = square_iterator.down
@@ -124,6 +131,7 @@ class DancingLinks():
 
                 new_square_cell.up = square_iterator
                 new_square_cell.column = square_iterator
+                square_iterator.size += 1
                 
                 square_iterator = square_iterator.right
 
@@ -164,7 +172,7 @@ class DancingLinks():
                                 row_iterator = row_iterator.right
                         cell_iterator = cell_iterator.down
 
-        self.__search(self.__solution_count + 1)
+        self.__search(self.__solution_count)
 
     def __cover(self, column):
         left_column = column.left
@@ -185,6 +193,8 @@ class DancingLinks():
 
                 left_column = iterator.column.left
                 right_column = iterator.column.right
+
+                iterator.column.size -= 1
 
                 iterator = iterator.right
             row_iterator = row_iterator.down
@@ -208,22 +218,47 @@ class DancingLinks():
 
                 left_column = column_iterator.column.left
                 right_column = column_iterator.column.right
+                
+                column_iterator.column.size += 1
 
                 column_iterator = column_iterator.left
             row_iterator = row_iterator.up
 
     def __print_answer(self):
         solution = [[-1 for i in range(9)] for j in range(9)]
-        for i in range(81*81):
+        for i in range(81):
             if (self.__found_solutions[i] != None):
-                solution[int(self.__found_solutions[i].column.name[0:1]) - 1][int(self.__found_solutions[i].column.name[1:2]) - 1] = self.__found_solutions[i].right.column.name[0:1]
+                coordinate_cell = None
+                if (self.__found_solutions[i].column.name[1] == "r"):
+                    coordinate_cell = self.__found_solutions[i].left
+                elif(self.__found_solutions[i].column.name[1] == "c"):
+                    coordinate_cell = self.__found_solutions[i].left.left
+                elif (self.__found_solutions[i].column.name[1] == "b"):
+                    coordinate_cell = self.__found_solutions[i].right
+                else:
+                    coordinate_cell = self.__found_solutions[i]
+                solution[int(coordinate_cell.column.name[0:1]) - 1][int(coordinate_cell.column.name[1:2]) - 1] = coordinate_cell.right.column.name[0:1]
         print(*solution, sep = "\n")
+
+    def __find_smallest_header(self):
+        minimum = self.__header.right.size
+        iterator = self.__header.right
+
+        while (iterator != self.__header):
+            if (iterator.size < minimum):
+                minimum = iterator.size
+            iterator = iterator.right
+        iterator = self.__header.right
+        while(iterator != self.__header):
+            if (iterator.size == minimum):
+                return iterator
+            iterator = iterator.right
 
     def __search(self, k):
         if (self.__header.right == self.__header):
             self.__print_answer()
             return
-        column = self.__header.right
+        column = self.__find_smallest_header()
         self.__cover(column)
         row_iterator = column.down
         while(row_iterator != column):
@@ -246,4 +281,4 @@ class DancingLinks():
         #self.__search()
         #return self.__found_solutions
         self.__construct_links(sudoku_matrix)
-        #print(str(self.__counter))
+        print(str(self.__counter))
