@@ -30,10 +30,20 @@
     <Compile Include="DLX\Header.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GUI\MainMenu.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GUI\SolverPage.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GUI\SupervisedSolverPage.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Sudoku_solver.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DLX\" />
+    <Folder Include="GUI\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

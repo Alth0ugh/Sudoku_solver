@@ -1,4 +1,5 @@
 from DLX.DancingLinks import *
+from GUI.SolverPage import *
 
 #sudoku_matrix = [
 #    [4,-1,3,-1,2,-1,7,-1,8],
@@ -50,6 +51,4 @@ sudoku_matrix = [
     [-1,-1,9,-1,-1,5,-1,6,-1]
     ]
 
-dl = DancingLinks()
-solution = dl.Solve(sudoku_matrix)
-print(*solution, sep = "\n")
+main_menu = SudokuGrid()

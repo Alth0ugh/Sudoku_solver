@@ -7,7 +7,6 @@ class DancingLinks():
         self.__solution_count = 0
         self.__header = Header()
         self.__header.name = "master"
-        self.__counter = 0
         self.__solution = None
 
     def __construct_links(self, sudoku_matrix):
@@ -146,18 +145,20 @@ class DancingLinks():
 
                 column_iterator = column_iterator.right
 
+                #After 3 columns have passed, block number changes
                 if ((j + 1) % 3 == 0):
                     block_iterator = block_iterator.right
-            
+            #If 3 rows are filled, then move to next 3 blocks belonging to another 3 rows
             if ((i + 1) % 3 == 0):
                     previous_block_iterator = block_iterator
-            else:
+            else: #otherwise return to the first block belonging to current 3 rows
                 block_iterator = previous_block_iterator        
-                    
+            
+            #If all 9 rows are filled, move to the 1st column of next number and move to the square on coordinates (1,1)
             if ((i + 1) % 9 == 0):
                 previous_column_iterator = column_iterator
                 square_iterator = first_square
-            else:
+            else: #otherwise return to the 1st column of the same number
                 column_iterator = previous_column_iterator
 
             row_iterator = row_iterator.right
@@ -244,6 +245,7 @@ class DancingLinks():
                     coordinate_cell = self.__found_solutions[i].right
                 else:
                     coordinate_cell = self.__found_solutions[i]
+                #The value belonging to particular cell is to be found in any row, column or block header
                 solution[int(coordinate_cell.column.name[0:1]) - 1][int(coordinate_cell.column.name[1:2]) - 1] = coordinate_cell.right.column.name[0:1]
         self.__solution = solution
 
