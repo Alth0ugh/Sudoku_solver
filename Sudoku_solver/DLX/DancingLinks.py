@@ -6,70 +6,79 @@ class DancingLinks():
         self.__found_solutions = [None] * 81
         self.__solution_count = 0
         self.__header = Header()
+        self.__header.name = "master"
         self.__counter = 0
+        self.__solution = None
 
     def __construct_links(self, sudoku_matrix):
-        header_iterator = self.__header
-        header_iterator.name = "master"
-        first_row = None
-        first_column = None
-        first_block = None
-        first_square = None
+        self.__solution = None
+        first_row = Header()
+        first_column = Header()
+        first_block = Header()
+        first_square = Header()
+
+        last_row = first_row
+        last_column = first_column
+        last_block = first_block
+        last_square = first_square
 
         for i in range(9):
             for j in range(9):
+                #Square column generation
                 new_square = Header()
                 new_square.name = str(i + 1) + str(j + 1)
                 new_square.size = 0
-                header_iterator.right = new_square
-                new_square.left = header_iterator
                 new_square.up = new_square
                 new_square.down = new_square
-                header_iterator = new_square
-                if (i == 0 and j == 0):
-                    first_square = new_square
-        
-        for i in range(9):
-            for j in range(9):
-                new_column = Header()
-                new_column.name = str(i + 1) + "r" + str(j + 1)
-                new_column.size = 0
-                header_iterator.right = new_column
-                new_column.left = header_iterator
-                new_column.up = new_column
-                new_column.down = new_column
-                header_iterator = new_column
-                if (i == 0 and j == 0):
-                    first_row = new_column
+                new_square.left = last_square
+                last_square.right = new_square
+                last_square = new_square
 
-        for i in range(9):
-            for j in range(9):
+                #Row column generation
+                new_row = Header()
+                new_row.name = str(i + 1) + "r" + str(j + 1)
+                new_row.size = 0
+                new_row.up = new_row
+                new_row.down = new_row
+                new_row.left = last_row
+                last_row.right = new_row
+                last_row = new_row
+
+                #Column column generation
                 new_column = Header()
                 new_column.name = str(i + 1) + "c" + str(j + 1)
                 new_column.size = 0
-                header_iterator.right = new_column
-                new_column.left = header_iterator
                 new_column.up = new_column
                 new_column.down = new_column
-                header_iterator = new_column
-                if (i == 0 and j == 0):
-                    first_column = new_column
+                last_column.right = new_column
+                new_column.left = last_column
+                last_column = new_column
 
-        for i in range(9):
-            for j in range(9):
-                new_column = Header()
-                new_column.name = str(i + 1) + "b" + str(j + 1)
-                new_column.size = 0
-                header_iterator.right = new_column
-                new_column.left = header_iterator
-                new_column.up = new_column
-                new_column.down = new_column
-                header_iterator = new_column
-                if (i == 0 and j == 0):
-                    first_block = new_column
+                #Block column generation
+                new_block = Header()
+                new_block.name = str(i + 1) + "b" + str(j + 1)
+                new_block.size = 0
+                new_block.up = new_block
+                new_block.down = new_block
+                last_block.right = new_block
+                new_block.left = last_block
+                last_block = new_block
 
-        header_iterator.right = self.__header
-        self.__header.left = header_iterator
+        first_square = first_square.right
+        first_row = first_row.right
+        first_column = first_column.right
+        first_block = first_block.right
+
+        self.__header.right = first_square
+        first_square.left = self.__header
+        last_square.right = first_row
+        first_row.left = last_square
+        last_row.right = first_column
+        first_column.left = last_row
+        last_column.right = first_block
+        first_block.left = last_column
+        last_block.right = self.__header
+        self.__header.left = last_block
 
         row_iterator = first_row
         column_iterator = first_column
@@ -172,8 +181,6 @@ class DancingLinks():
                                 row_iterator = row_iterator.right
                         cell_iterator = cell_iterator.down
 
-        self.__search(self.__solution_count)
-
     def __cover(self, column):
         left_column = column.left
         right_column = column.right
@@ -224,7 +231,7 @@ class DancingLinks():
                 column_iterator = column_iterator.left
             row_iterator = row_iterator.up
 
-    def __print_answer(self):
+    def __generate_answer(self):
         solution = [[-1 for i in range(9)] for j in range(9)]
         for i in range(81):
             if (self.__found_solutions[i] != None):
@@ -238,7 +245,7 @@ class DancingLinks():
                 else:
                     coordinate_cell = self.__found_solutions[i]
                 solution[int(coordinate_cell.column.name[0:1]) - 1][int(coordinate_cell.column.name[1:2]) - 1] = coordinate_cell.right.column.name[0:1]
-        print(*solution, sep = "\n")
+        self.__solution = solution
 
     def __find_smallest_header(self):
         minimum = self.__header.right.size
@@ -256,7 +263,7 @@ class DancingLinks():
 
     def __search(self, k):
         if (self.__header.right == self.__header):
-            self.__print_answer()
+            self.__generate_answer()
             return
         column = self.__find_smallest_header()
         self.__cover(column)
@@ -278,7 +285,7 @@ class DancingLinks():
         self.__counter += 1
 
     def Solve(self, sudoku_matrix):
-        #self.__search()
-        #return self.__found_solutions
         self.__construct_links(sudoku_matrix)
-        print(str(self.__counter))
+        self.__search(self.__solution_count)
+
+        return self.__solution
