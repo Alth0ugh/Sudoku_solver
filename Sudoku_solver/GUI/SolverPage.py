@@ -1,34 +1,28 @@
 from tkinter import *
-from tkinter import ttk
+from GUI.SudokuGrid import *
+from DLX.DancingLinks import *
 
-class SudokuGrid():
-    def __value_changed(self, value, coordinates):
-        pass
-    def __init__(self):
-        root = Tk()
+class SolverPage():
+    def __init__(self, root):
+        frame = Frame(root)
+        button_frame = Frame(frame)
+        solve_button = Button(button_frame, text = "Vyrieš", command = self.solve)
+        clear_button = Button(button_frame, text = "Vymaž", command = self.clear_sudoku)
+        self.__sudoku_grid = SudokuGrid(frame)
+        self.__sudoku_grid.pack(side = LEFT)
+        button_frame.pack(side = LEFT)
+        solve_button.pack()
+        clear_button.pack()
+        frame.pack()
 
-        root.geometry("500x500")
+    def solve(self):
+        current_sudoku = self.__sudoku_grid.get_sudoku()
+        dancing_links = DancingLinks()
+        solution = dancing_links.Solve(current_sudoku)
+        if (solution == None):
+            messagebox.showinfo("Chyba riešenia", "Nebolo možné nájsť žiadne riešenie zadaného sudoku.")
+            return
+        self.__sudoku_grid.show_answer(solution)
 
-        for i in range(12):
-            for j in range(12):
-                if (j % 4 != 0 and i % 4 != 0):
-                    sr = StringVar()
-                    sr.trace("w", lambda name, index, mode, sr=sr: self.__value_changed(sr.get(), str(i) + str(j)))
-
-                    frame = Frame(root, width = 40, height = 40)
-                    text_box = Entry(frame, textvariable = sr)
-                    frame.grid_propagate(False)
-                    frame.columnconfigure(0, weight = 1)
-                    frame.rowconfigure(0, weight = 1)
-                    frame.configure(highlightbackground="black")
-                    frame.configure(highlightthickness=1)
-
-                    frame.grid(row = i, column = j)
-                    text_box.grid(sticky = "wens")
-                elif (j % 4 == 0):
-                    separator = ttk.Separator(root, orient = "vertical")
-                    separator.grid(row = i, column = j, sticky = "ns")
-                elif (i % 4 == 0):
-                    separator = ttk.Separator(root, orient = "horizontal")
-                    separator.grid(row = i, column = j, sticky = "ns")
-        root.mainloop()
+    def clear_sudoku(self):
+        self.__sudoku_grid.clear_sudoku()

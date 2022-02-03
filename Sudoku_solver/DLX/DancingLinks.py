@@ -284,7 +284,6 @@ class DancingLinks():
                 column_iterator = column_iterator.left
             row_iterator = row_iterator.down
         self.__uncover(column)
-        self.__counter += 1
 
     def Solve(self, sudoku_matrix):
         self.__construct_links(sudoku_matrix)
