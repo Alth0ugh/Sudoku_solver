@@ -8,6 +8,7 @@ class DancingLinks():
         self.__header = Header()
         self.__header.name = "master"
         self.__solution = None
+        self.__original_sudoku = None
 
     def __construct_links(self, sudoku_matrix):
         self.__solution = None
@@ -285,8 +286,55 @@ class DancingLinks():
             row_iterator = row_iterator.down
         self.__uncover(column)
 
-    def Solve(self, sudoku_matrix):
-        self.__construct_links(sudoku_matrix)
-        self.__search(self.__solution_count)
+    def Solve(self, sudoku_matrix = None):
+        if (sudoku_matrix == None and self.__original_sudoku != None):
+            self.__search(self.__solution_count)
+        elif (sudokusudoku_matrix == None and self.__original_sudoku == None):
+            return None
+        else:
+            self.__construct_links(sudoku_matrix)
+            self.__search(self.__solution_count)
 
         return self.__solution
+
+    def set_current_state(self, sudoku_grid):
+        self.__construct_links(sudoku_grid)
+        self.__original_sudoku = sudoku_grid
+
+    def modify_changes(self, sudoku_grid):
+        if (self.__original_sudoku == None):
+            return
+
+        for i in range(9):
+            for j in range(9):
+                if(self.__original_sudoku[i][j] != sudoku_grid[i][j]):
+                    square_iterator = self.__header.right
+                    number = sudoku_grid[i][j]
+                    while(square_iterator.name != str(i + 1) + str(j + 1)):
+                        square_iterator = square_iterator.right
+                    cell_iterator = square_iterator.down
+                    self.__cover(square_iterator)
+                    while(square_iterator != cell_iterator):
+                        if (cell_iterator.left.column.name[0:1] == number):
+                            self.__found_solutions[self.__solution_count] = cell_iterator
+                            self.__solution_count += 1
+                            row_iterator = cell_iterator.right
+                            while(row_iterator != cell_iterator):
+                                self.__cover(row_iterator.column)
+                                row_iterator = row_iterator.right
+                        cell_iterator = cell_iterator.down
+
+    def get_hint(self):
+        column_iterator = self.__header.right
+        while(column_iterator.size != 1 and column_iterator != self.__header):
+            column_iterator = column_iterator.right
+        if (column_iterator == self.__header):
+            return "V momentálnom stave nie je možné dať žiadnu nápovedu"
+        if (column_iterator.name[1] == "r"):
+            return "Na súradnice " + column_iterator.name[2] + " " + column_iterator.down.right.column.name[2] + " je možné dať iba " + column_iterator.name[0]
+        elif (column_iterator.name[1] == "c"):
+            return "Na súradnice " + column_iterator.down.left.column.name[2] + " " + column_iterator.name[2] + " je možné dať iba " + column_iterator.name[0]
+        elif (column_iterator.name[1] == "b"):
+            return "Na súradnice " + column_iterator.down.right.column.name[2] + " " + column_iterator.down.right.column.name[1] + " je možné dať iba " + column_iterator.name[0]
+        else:
+            return "Na súradnice " + column_iterator.name[2] + " " + column_iterator.name[2] + " je možné dať iba " + column_iterator.down.right.column.name[0]

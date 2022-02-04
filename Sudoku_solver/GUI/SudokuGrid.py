@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 
 class SudokuGrid():
-    def __value_changed(self, value, coordinates):
+    def __value_changed(self, value, coordinates, variable):
         coord = coordinates.split("_")
         if (value.isnumeric()):
             self.__sudoku[int(coord[0])][int(coord[1])] = int(value)
@@ -24,7 +24,7 @@ class SudokuGrid():
             for j in range(12):
                 if (j % 4 != 0 and i % 4 != 0):
                     sr = StringVar(name = str(x) + "_" + str(y))
-                    sr.trace("w", lambda name, index, mode, sr=sr: self.__value_changed(sr.get(), sr._name))
+                    sr.trace("w", lambda name, index, mode, sr=sr: self.__value_changed(sr.get(), sr._name, sr))
                     self.__vars[vars_iterator] = sr
 
                     frame = Frame(self.__root, width = 40, height = 40)
@@ -60,7 +60,11 @@ class SudokuGrid():
         self.__root.pack(side = side)
 
     def get_sudoku(self):
-        return self.__sudoku
+        return_val = [[-1 for i in range(9)] for j in range(9)]
+        for i in range(9):
+            for j in range(9):
+                return_val[i][j] = self.__sudoku[i][j]
+        return return_val
 
     def clear_sudoku(self):
         for var in self.__vars:
@@ -75,4 +79,4 @@ class SudokuGrid():
         for entry in self.__squares:
             if (entry.get() != ""):
                 entry.configure(state = "disabled")
-
+   
