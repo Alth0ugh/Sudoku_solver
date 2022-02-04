@@ -23,7 +23,7 @@ class SupervisedSolverPage():
 
         
     def lock_grid(self):
-        pass
+        self.__sudoku_grid.lock_grid()
 
     def get_hint(self):
         pass
