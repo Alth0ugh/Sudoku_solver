@@ -26,11 +26,9 @@ class SupervisedSolverPage():
     def lock_grid(self):
         self.__sudoku_grid.lock_grid()
         self.__dancing_links = DancingLinks()
-        self.__dancing_links.set_current_state(self.__sudoku_grid.get_sudoku())
 
     def get_hint(self):
-        self.__dancing_links.modify_changes(self.__sudoku_grid.get_sudoku())
-        messagebox.showinfo("Nápoveda", self.__dancing_links.get_hint())
+        messagebox.showinfo("Nápoveda", self.__dancing_links.get_hint(self.__sudoku_grid.get_sudoku()))
 
     def solve_sudoku(self):
         pass

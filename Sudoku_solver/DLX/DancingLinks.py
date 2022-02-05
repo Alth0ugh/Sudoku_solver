@@ -12,6 +12,7 @@ class DancingLinks():
 
     def __construct_links(self, sudoku_matrix):
         self.__solution = None
+        self.__header = Header()
         first_row = Header()
         first_column = Header()
         first_block = Header()
@@ -297,34 +298,8 @@ class DancingLinks():
 
         return self.__solution
 
-    def set_current_state(self, sudoku_grid):
+    def get_hint(self, sudoku_grid):
         self.__construct_links(sudoku_grid)
-        self.__original_sudoku = sudoku_grid
-
-    def modify_changes(self, sudoku_grid):
-        if (self.__original_sudoku == None):
-            return
-
-        for i in range(9):
-            for j in range(9):
-                if(self.__original_sudoku[i][j] != sudoku_grid[i][j]):
-                    square_iterator = self.__header.right
-                    number = sudoku_grid[i][j]
-                    while(square_iterator.name != str(i + 1) + str(j + 1)):
-                        square_iterator = square_iterator.right
-                    cell_iterator = square_iterator.down
-                    self.__cover(square_iterator)
-                    while(square_iterator != cell_iterator):
-                        if (cell_iterator.left.column.name[0:1] == number):
-                            self.__found_solutions[self.__solution_count] = cell_iterator
-                            self.__solution_count += 1
-                            row_iterator = cell_iterator.right
-                            while(row_iterator != cell_iterator):
-                                self.__cover(row_iterator.column)
-                                row_iterator = row_iterator.right
-                        cell_iterator = cell_iterator.down
-
-    def get_hint(self):
         column_iterator = self.__header.right
         while(column_iterator.size != 1 and column_iterator != self.__header):
             column_iterator = column_iterator.right
@@ -337,4 +312,4 @@ class DancingLinks():
         elif (column_iterator.name[1] == "b"):
             return "Na súradnice " + column_iterator.down.right.column.name[2] + " " + column_iterator.down.right.column.name[1] + " je možné dať iba " + column_iterator.name[0]
         else:
-            return "Na súradnice " + column_iterator.name[2] + " " + column_iterator.name[2] + " je možné dať iba " + column_iterator.down.right.column.name[0]
+            return "Na súradnice " + column_iterator.name[0] + " " + column_iterator.name[1] + " je možné dať iba " + column_iterator.down.right.column.name[0]
