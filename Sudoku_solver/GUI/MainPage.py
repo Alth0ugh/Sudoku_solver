@@ -8,9 +8,12 @@ class MainPage():
         self.setup_main_page()
 
     def go_back(self):
+        self.clear_window()
+        self.setup_main_page()
+
+    def clear_window(self):
         for child in self.__root.winfo_children():
             child.destroy()
-        self.setup_main_page()
 
     def setup_main_page(self):
         self.__root.geometry("500x500")
@@ -35,8 +38,7 @@ class MainPage():
         self.__root.mainloop()
 
     def show_solver_page(self):
-        for child in self.__root.winfo_children():
-            child.destroy()
+        self.clear_window()
 
         self.__back_button_frame = Frame(self.__root)
 
@@ -48,8 +50,7 @@ class MainPage():
         solver_page = SolverPage(self.__root)
 
     def show_supervised_solver_page(self):
-        for child in self.__root.winfo_children():
-            child.destroy()
+        self.clear_window()
 
         self.__back_button_frame = Frame(self.__root)
 

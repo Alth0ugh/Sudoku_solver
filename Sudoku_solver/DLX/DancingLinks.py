@@ -9,11 +9,13 @@ class DancingLinks():
         self.__header.name = "master"
         self.__solution = None
         self.__original_sudoku = None
+        self.__answer_count = 0
 
     def __construct_links(self, sudoku_matrix):
         self.__solution = None
         self.__found_solutions = [None] * 81
         self.__solution_count = 0
+        self.__answer_count = 0
         self.__header = Header()
         self.__header.name = "master"
         first_row = Header()
@@ -271,6 +273,7 @@ class DancingLinks():
     def __search(self, k):
         if (self.__header.right == self.__header):
             self.__generate_answer()
+            self.__answer_count += 1
             return
         column = self.__find_smallest_header()
         self.__cover(column)
@@ -300,6 +303,9 @@ class DancingLinks():
             self.__search(self.__solution_count)
 
         return self.__solution
+
+    def get_solution_count(self):
+        return self.__solution_count
 
     def get_hint(self, sudoku_grid):
         self.__construct_links(sudoku_grid)
