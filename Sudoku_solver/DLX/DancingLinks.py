@@ -12,7 +12,10 @@ class DancingLinks():
 
     def __construct_links(self, sudoku_matrix):
         self.__solution = None
+        self.__found_solutions = [None] * 81
+        self.__solution_count = 0
         self.__header = Header()
+        self.__header.name = "master"
         first_row = Header()
         first_column = Header()
         first_block = Header()
@@ -290,7 +293,7 @@ class DancingLinks():
     def Solve(self, sudoku_matrix = None):
         if (sudoku_matrix == None and self.__original_sudoku != None):
             self.__search(self.__solution_count)
-        elif (sudokusudoku_matrix == None and self.__original_sudoku == None):
+        elif (sudoku_matrix == None and self.__original_sudoku == None):
             return None
         else:
             self.__construct_links(sudoku_matrix)

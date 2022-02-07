@@ -67,8 +67,10 @@ class SudokuGrid():
         return return_val
 
     def clear_sudoku(self):
-        for var in self.__vars:
-            var.set("")
+        for i in range(81):
+            self.__vars[i].set("")
+            if (self.__squares[i].config()["state"][4] == "disabled"):
+                self.__squares[i].configure(state = "normal")
 
     def show_answer(self, solved_sudoku):
         for i in range(9):
