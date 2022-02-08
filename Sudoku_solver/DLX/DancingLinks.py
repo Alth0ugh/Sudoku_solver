@@ -11,6 +11,7 @@ class DancingLinks():
         self.__original_sudoku = None
         self.__answer_count = 0
 
+    #Generates constraint table according to sudoku from the input.
     def __construct_links(self, sudoku_matrix):
         self.__solution = None
         self.__found_solutions = [None] * 81
@@ -32,6 +33,7 @@ class DancingLinks():
             for j in range(9):
                 #Square column generation
                 new_square = Header()
+                #First digit is row index and the second digit is column index (both counting from 1).
                 new_square.name = str(i + 1) + str(j + 1)
                 new_square.size = 0
                 new_square.up = new_square
@@ -42,6 +44,7 @@ class DancingLinks():
 
                 #Row column generation
                 new_row = Header()
+                #First digit is a number that is possible to insert into the row and the second digit is row index.
                 new_row.name = str(i + 1) + "r" + str(j + 1)
                 new_row.size = 0
                 new_row.up = new_row
@@ -52,6 +55,7 @@ class DancingLinks():
 
                 #Column column generation
                 new_column = Header()
+                #First digit is a number that is possible to insert into the column and the second digit is column index.
                 new_column.name = str(i + 1) + "c" + str(j + 1)
                 new_column.size = 0
                 new_column.up = new_column
@@ -62,6 +66,7 @@ class DancingLinks():
 
                 #Block column generation
                 new_block = Header()
+                #First digit is a number that is possible to insert into the block and the second digit is block index (top-leftmost block is 1, bottom-rightmost is 9).
                 new_block.name = str(i + 1) + "b" + str(j + 1)
                 new_block.size = 0
                 new_block.up = new_block
@@ -89,11 +94,14 @@ class DancingLinks():
         row_iterator = first_row
         column_iterator = first_column
         square_iterator = first_square
-        previous_column_iterator = column_iterator
+        previous_column_iterator = column_iterator #Used when a single row is filled so we could return to columnn 1 but on the next row.
         block_iterator = first_block
+        #Used when a signle row (note that every row intersects 3 blocks) is filled a we need to get to a next row intersecting those same 3 blocks.
         previous_block_iterator = block_iterator
 
+        #For each square
         for i in range(81):
+            #For each number in one square
             for j in range(9):
                 new_row_cell = Cell()
                 new_column_cell = Cell()
@@ -170,6 +178,7 @@ class DancingLinks():
 
             row_iterator = row_iterator.right
 
+        #Iterates over the sudoku and deletes the links corresponding with given clues from the user
         for i in range(9):
             for j in range(9):
                 sqaure_iterator = first_square
@@ -180,6 +189,7 @@ class DancingLinks():
                     cell_iterator = square_iterator.down
                     self.__cover(square_iterator)
                     while(square_iterator != cell_iterator):
+                        #On all but square headers there is information about what number the selected row in constraint grid represents.
                         if (cell_iterator.left.column.name[0:1] == str(number)):
                             self.__found_solutions[self.__solution_count] = cell_iterator
                             self.__solution_count += 1
@@ -189,6 +199,7 @@ class DancingLinks():
                                 row_iterator = row_iterator.right
                         cell_iterator = cell_iterator.down
 
+    #Covers (deletes) a column from constraint grid and deletes links to cells in the same row in other columns.
     def __cover(self, column):
         left_column = column.left
         right_column = column.right
@@ -214,6 +225,7 @@ class DancingLinks():
                 iterator = iterator.right
             row_iterator = row_iterator.down
 
+    #Reverses the "__cover" function. Uncovering takes place in opposite order (covering from up-down left-right, uncovering down-up right-left)
     def __uncover(self, column):
         left_column = column.left
         right_column = column.right
@@ -239,6 +251,7 @@ class DancingLinks():
                 column_iterator = column_iterator.left
             row_iterator = row_iterator.up
 
+    #Generates solved sudoku from cells that were stored during "__solve" function.
     def __generate_answer(self):
         solution = [[-1 for i in range(9)] for j in range(9)]
         for i in range(81):
@@ -256,6 +269,7 @@ class DancingLinks():
                 solution[int(coordinate_cell.column.name[0:1]) - 1][int(coordinate_cell.column.name[1:2]) - 1] = coordinate_cell.right.column.name[0:1]
         self.__solution = solution
 
+    #Finds a header with the smallest size - used for heuristic, which chooses the column with the smallest number for possible solutions.
     def __find_smallest_header(self):
         minimum = self.__header.right.size
         iterator = self.__header.right
@@ -270,6 +284,8 @@ class DancingLinks():
                 return iterator
             iterator = iterator.right
 
+    #Finds a solution that would satisfy all the constraints. If there is no such solution, the property __solution is None. If there is one, the property contains the solution.
+    #If there are multiple solution, __answer_count is greater than 1 and there is one of the multiple solutions in __solution.
     def __search(self, k):
         if (self.__header.right == self.__header):
             self.__generate_answer()
@@ -293,6 +309,7 @@ class DancingLinks():
             row_iterator = row_iterator.down
         self.__uncover(column)
 
+    #Constructs the constraint grid and solves it. If there is a solution, then the solution is returned. Otherwise, None is returned.
     def Solve(self, sudoku_matrix = None):
         if (sudoku_matrix == None and self.__original_sudoku != None):
             self.__search(self.__solution_count)
@@ -306,7 +323,8 @@ class DancingLinks():
 
     def get_solution_count(self):
         return self.__solution_count
-
+    
+    #Tries to find a constraint with only 1 possible solution. Then an appropriate message is returned.
     def get_hint(self, sudoku_grid):
         self.__construct_links(sudoku_grid)
         column_iterator = self.__header.right
