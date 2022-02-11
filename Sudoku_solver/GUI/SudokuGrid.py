@@ -52,6 +52,7 @@ class SudokuGrid():
                     separator = ttk.Separator(self.__root, orient = "horizontal")
                     separator.grid(row = i, column = j, sticky = "ns")
         self.__sudoku = [[-1 for i in range(9)] for j in range(9)]
+        self.clear_sudoku()
 
     def grid(self, row, column):
         self.__root.grid(row = row, column = column)

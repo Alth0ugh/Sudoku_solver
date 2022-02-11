@@ -287,6 +287,8 @@ class DancingLinks():
     #Finds a solution that would satisfy all the constraints. If there is no such solution, the property __solution is None. If there is one, the property contains the solution.
     #If there are multiple solution, __answer_count is greater than 1 and there is one of the multiple solutions in __solution.
     def __search(self, k):
+        if (self.__answer_count > 1): #We do not need to search for all the solutions
+            return
         if (self.__header.right == self.__header):
             self.__generate_answer()
             self.__answer_count += 1
@@ -322,7 +324,7 @@ class DancingLinks():
         return self.__solution
 
     def get_solution_count(self):
-        return self.__solution_count
+        return self.__answer_count
     
     #Tries to find a constraint with only 1 possible solution. Then an appropriate message is returned.
     def get_hint(self, sudoku_grid):
@@ -337,6 +339,6 @@ class DancingLinks():
         elif (column_iterator.name[1] == "c"):
             return "Na súradnice " + column_iterator.down.left.column.name[2] + " " + column_iterator.name[2] + " je možné dať iba " + column_iterator.name[0]
         elif (column_iterator.name[1] == "b"):
-            return "Na súradnice " + column_iterator.down.right.column.name[2] + " " + column_iterator.down.right.column.name[1] + " je možné dať iba " + column_iterator.name[0]
+            return "Na súradnice " + column_iterator.down.right.column.name[0] + " " + column_iterator.down.right.column.name[1] + " je možné dať iba " + column_iterator.name[0]
         else:
             return "Na súradnice " + column_iterator.name[0] + " " + column_iterator.name[1] + " je možné dať iba " + column_iterator.down.right.column.name[0]
