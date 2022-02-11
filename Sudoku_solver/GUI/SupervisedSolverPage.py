@@ -26,6 +26,15 @@ class SupervisedSolverPage():
         button_frame.pack(side = LEFT)
         
     def lock_grid(self):
+        sudoku = self.__sudoku_grid.get_sudoku()
+        counter = 0
+        for i in range(9):
+            for j in range(9):
+                if (sudoku[i][j] != -1):
+                    counter += 1
+        if (counter < 17):
+            messagebox.showinfo("Chyba", "Bolo zadaných príliš málo hodnôt. Zadajte sudoku, ktoré má aspoň 17 hodnôt.")
+            return
         self.__sudoku_grid.lock_grid()
         self.__dancing_links = DancingLinks()
 

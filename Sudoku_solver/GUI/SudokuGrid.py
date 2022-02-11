@@ -6,7 +6,13 @@ class SudokuGrid():
     def __value_changed(self, value, coordinates, variable):
         coord = coordinates.split("_")
         if (value.isnumeric()):
-            self.__sudoku[int(coord[0])][int(coord[1])] = int(value)
+            number = int(value)
+            if (number < 1 or number > 9):
+                messagebox.showinfo("Chyba", "Nemôžete zadávať väčšie číslo ako 9 alebo menšie číslo ako 1")
+                variable.set("")
+                self.__sudoku[int(coord[0])][int(coord[1])] = -1
+            else:
+                self.__sudoku[int(coord[0])][int(coord[1])] = int(value)
         elif(value.isnumeric() == False and value != ""):
              messagebox.showinfo("Chyba", "Zadali ste text namiesto čísla")
              variable.set("")

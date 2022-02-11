@@ -17,6 +17,15 @@ class SolverPage():
 
     def solve(self):
         current_sudoku = self.__sudoku_grid.get_sudoku()
+        counter = 0
+        for i in range(9):
+            for j in range(9):
+                if (current_sudoku[i][j] != -1):
+                    counter += 1
+        if (counter < 17):
+            messagebox.showinfo("Chyba", "Bolo zadaných príliš málo hodnôt. Zadajte sudoku, ktoré má aspoň 17 hodnôt.")
+            return
+
         dancing_links = DancingLinks()
         solution = dancing_links.Solve(current_sudoku)
         if (solution == None):
