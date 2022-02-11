@@ -8,7 +8,6 @@ class DancingLinks():
         self.__header = Header()
         self.__header.name = "master"
         self.__solution = None #Final solution
-        self.__original_sudoku = None
         self.__answer_count = 0 #Counts if more than one answer was found
 
     #Generates constraint table according to sudoku from the input.
@@ -313,13 +312,8 @@ class DancingLinks():
 
     #Constructs the constraint grid and solves it. If there is a solution, then the solution is returned. Otherwise, None is returned.
     def Solve(self, sudoku_matrix = None):
-        if (sudoku_matrix == None and self.__original_sudoku != None):
-            self.__search(self.__solution_count)
-        elif (sudoku_matrix == None and self.__original_sudoku == None):
-            return None
-        else:
-            self.__construct_links(sudoku_matrix)
-            self.__search(self.__solution_count)
+        self.__construct_links(sudoku_matrix)
+        self.__search(self.__solution_count)
 
         return self.__solution
 
@@ -335,10 +329,10 @@ class DancingLinks():
         if (column_iterator == self.__header):
             return "V momentálnom stave nie je možné dať žiadnu nápovedu"
         if (column_iterator.name[1] == "r"):
-            return "Na súradnice " + column_iterator.name[2] + " " + column_iterator.down.right.column.name[2] + " je možné dať iba " + column_iterator.name[0]
+            return "Na riadok " + column_iterator.name[2] + " a stĺpec " + column_iterator.down.right.column.name[2] + " je možné dať iba " + column_iterator.name[0]
         elif (column_iterator.name[1] == "c"):
-            return "Na súradnice " + column_iterator.down.left.column.name[2] + " " + column_iterator.name[2] + " je možné dať iba " + column_iterator.name[0]
+            return "Na riadok " + column_iterator.down.left.column.name[2] + " a stĺpec " + column_iterator.name[2] + " je možné dať iba " + column_iterator.name[0]
         elif (column_iterator.name[1] == "b"):
-            return "Na súradnice " + column_iterator.down.right.column.name[0] + " " + column_iterator.down.right.column.name[1] + " je možné dať iba " + column_iterator.name[0]
+            return "Na riadok " + column_iterator.down.right.column.name[0] + " a stĺpec " + column_iterator.down.right.column.name[1] + " je možné dať iba " + column_iterator.name[0]
         else:
-            return "Na súradnice " + column_iterator.name[0] + " " + column_iterator.name[1] + " je možné dať iba " + column_iterator.down.right.column.name[0]
+            return "Na riadok " + column_iterator.name[0] + " a stĺpec " + column_iterator.name[1] + " je možné dať iba " + column_iterator.down.right.column.name[0]
