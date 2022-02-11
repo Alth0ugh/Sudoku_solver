@@ -32,7 +32,7 @@ class SolverPage():
             messagebox.showinfo("Chyba riešenia", "Nebolo možné nájsť žiadne riešenie zadaného sudoku.")
             return
         self.__sudoku_grid.show_answer(solution)
-        if (dancing_links.get_solution_count() > 1):
+        if (dancing_links.is_unique_solution()):
             messagebox.showinfo("Riešenie sudoku", "Sudoku má viac ako 1 riešenie. Zobrazujem jedno z nich.")
 
     def clear_sudoku(self):

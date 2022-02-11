@@ -4,12 +4,12 @@ from DLX.Header import *
 class DancingLinks():
     def __init__(self):
         self.__found_solutions = [None] * 81
-        self.__solution_count = 0
+        self.__solution_count = 0 #Counts how many clues were given by user
         self.__header = Header()
         self.__header.name = "master"
-        self.__solution = None
+        self.__solution = None #Final solution
         self.__original_sudoku = None
-        self.__answer_count = 0
+        self.__answer_count = 0 #Counts if more than one answer was found
 
     #Generates constraint table according to sudoku from the input.
     def __construct_links(self, sudoku_matrix):
@@ -181,7 +181,7 @@ class DancingLinks():
         #Iterates over the sudoku and deletes the links corresponding with given clues from the user
         for i in range(9):
             for j in range(9):
-                sqaure_iterator = first_square
+                sqaure_iterator = self.__header.right
                 if (sudoku_matrix[i][j] != -1):
                     number = sudoku_matrix[i][j]
                     while(square_iterator.name != str(i + 1) + str(j + 1)):
@@ -323,8 +323,8 @@ class DancingLinks():
 
         return self.__solution
 
-    def get_solution_count(self):
-        return self.__answer_count
+    def is_unique_solution(self):
+        return self.__answer_count > 1
     
     #Tries to find a constraint with only 1 possible solution. Then an appropriate message is returned.
     def get_hint(self, sudoku_grid):
